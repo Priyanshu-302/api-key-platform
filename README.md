@@ -25,8 +25,7 @@ api-key-platform/
 │
 ├── src/
 │   │
-│   ├── config/                  # App & infra configuration
-│   │   ├── env.js                # dotenv + env validation
+│   ├── config/                  # App & infra configuration            
 │   │   └── postgres.js           # PG pool / client
 │   │
 │   ├── models/                  # DB access layer (SQL only)
@@ -57,6 +56,7 @@ api-key-platform/
 │   │
 │   ├── utils/                   # Pure helpers (no side effects)
 │   │   ├── jwt.js
+|   |   ├── token.js
 │   │   ├── password.js
 │   │   └── apiKey.js
 │   │
@@ -66,7 +66,7 @@ api-key-platform/
 ├── sql/
 │   └── schema.sql               # DB schema (tables, indexes)
 │
-├── .env
+├── LICENSE
 ├── .env.example
 ├── package.json
 └── README.md
