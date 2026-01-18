@@ -1,22 +1,25 @@
-const pool = require("../config/postgres_db");
+const { pool } = require("../config/postgres_db");
 
-exports.createUser = async (id, email, password) => {
+exports.createUser = async (email, password) => {
   await pool.query(
-    `insert into users(id, email, passowrd) values($1, $2, $3)`,
-    [id, email, password],
+    `insert into users(email, password) values($1, $2) returning id, email`,
+    [email, password],
   );
 };
 
 exports.findUserByEmail = async (email) => {
-  const result = await pool.query(`select id, email from users where email = $1`, [
-    email,
-  ]);
+  const result = await pool.query(
+    `select id, email, password from users where email = $1`,
+    [email],
+  );
 
   return result.rows[0];
 };
 
 exports.findUserById = async (id) => {
-  const result = await pool.query(`select id, email from users where id = $1`, [id]);
+  const result = await pool.query(`select id, email from users where id = $1`, [
+    id,
+  ]);
 
   return result.rows[0];
 };

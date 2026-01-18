@@ -1,5 +1,5 @@
 // This will be the replica of rate limiter in Redis
-const pool = require("../config/postgres_db");
+const { pool } = require("../config/postgres_db");
 
 // Get the API usage
 exports.getApiUsage = async (id, date) => {

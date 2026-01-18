@@ -1,34 +1,42 @@
-const pool = require("../config/postgres_db");
+const { pool } = require("../config/postgres_db");
 
-// Create the API key
-exports.createApiKey = async (id, user_id, key_name, key_hash) => {
+// Create a new API key in DB
+exports.createApiKey = async (user_id, key_name, raw_key, key_hash) => {
   await pool.query(
-    `insert into api_keys(id, user_id, key_name, key_hash, daily_limit, is_active) values($1, $2, $3, $4, 100, true)`,
-    [id, user_id, key_name, key_hash],
+    `INSERT INTO api_keys(user_id, key_name, raw_key, key_hash, daily_limit, is_active)
+     VALUES ($1, $2, $3, $4, 100, true)`,
+    [user_id, key_name, raw_key, key_hash]
   );
 };
 
-// Get all the API keys related to a user
+// Get API key by raw key (for validation)
+exports.getApiKeyByRawKey = async (rawKey) => {
+  const result = await pool.query(
+    `SELECT id, user_id, key_name, key_hash, daily_limit, is_active
+     FROM api_keys
+     WHERE raw_key = $1 AND is_active = true`,
+    [rawKey]
+  );
+
+  return result.rows[0]; // undefined if not found
+};
+
+// Get all API keys of a user
 exports.getApiKeysByUserId = async (user_id) => {
   const result = await pool.query(
-    `select id, key_name, is_active, created_at from api_keys where user_id = $1`,
-    [user_id],
+    `SELECT id, key_name, is_active, created_at
+     FROM api_keys
+     WHERE user_id = $1`,
+    [user_id]
   );
 
   return result.rows;
 };
 
-// Soft delete the API key
+// Soft delete
 exports.revokeApiKeyByUserId = async (id, user_id) => {
   await pool.query(
-    `update api_keys set is_active = false where id = $1 and user_id = $2`,
-    [id, user_id],
+    `UPDATE api_keys SET is_active = false WHERE id = $1 AND user_id = $2`,
+    [id, user_id]
   );
-};
-
-// Get all the API keys
-exports.getAllApiKeys = async () => {
-  const result = await pool.query(`select id, key_name from api_keys where is_active = true`);
-
-  return result.rows;
 };
